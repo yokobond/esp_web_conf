@@ -13,7 +13,7 @@ First of all, you should upload this sketch using [esp8266/Arduino](https://gith
 
 Then follow this instructions.  
 
-1. Connect the module's access point SSID 'esp-????' directory.
+1. Connect the module's access point SSID 'esp-????' directly.
  - module ID 'esp-????': '????' is determined by MAC address.
 2. Open 'http://192.168.4.1/wifi_conf' and set the SSID and Password of your WiFi network.
 3. Reboot the module to connect the WiFi network and get DHCP address.
