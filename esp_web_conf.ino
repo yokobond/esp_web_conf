@@ -101,7 +101,8 @@ void setup() {
 
   // setup Web Interface
   setupWeb();
-  setupWifiConfWeb();
+  setupWifiConf();
+  setupWebUpdate();
 
   // start Web Server
   server.begin();
@@ -190,7 +191,7 @@ void printIP(void) {
   Serial.println(WiFi.softAPIP());
 }
 
-void setupWifiConfWeb(void) {
+void setupWifiConf(void) {
   server.on("/wifi_conf", []() {
     IPAddress ip = WiFi.localIP();
     String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
@@ -241,6 +242,47 @@ void setupWifiConfWeb(void) {
   });
 }
 
+const char* sketchUploadForm = "<form method='POST' action='/upload_sketch' enctype='multipart/form-data'><input type='file' name='sketch'><input type='submit' value='Upload'></form>";
+
+void setupWebUpdate(void) {
+  server.on("/update", HTTP_GET, []() {
+    server.sendHeader("Connection", "close");
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(200, "text/html", sketchUploadForm);
+  });
+  server.onFileUpload([]() {
+    if (server.uri() != "/upload_sketch") return;
+    HTTPUpload& upload = server.upload();
+    if (upload.status == UPLOAD_FILE_START) {
+      Serial.setDebugOutput(true);
+      WiFiUDP::stopAll();
+      Serial.printf("Sketch: %s\n", upload.filename.c_str());
+      uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+      if (!Update.begin(maxSketchSpace)) { //start with max available size
+        Update.printError(Serial);
+      }
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+      if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+        Update.printError(Serial);
+      }
+    } else if (upload.status == UPLOAD_FILE_END) {
+      if (Update.end(true)) { //true to set the size to the current progress
+        Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+      } else {
+        Update.printError(Serial);
+      }
+      Serial.setDebugOutput(false);
+    }
+    yield();
+  });
+  server.on("/upload_sketch", HTTP_POST, []() {
+    server.sendHeader("Connection", "close");
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+    ESP.restart();
+  });
+}
+
 void setupWeb(void) {
   server.on("/", []() {
     IPAddress ip = WiFi.localIP();
@@ -262,6 +304,7 @@ void setupWeb(void) {
     content += "</p>";
     content += "<ul>";
     content += "<li><a href='/wifi_conf'>WiFi Configuration</a>";
+    content += "<li><a href='/update'>Update Sketch</a>";
     content += "</ul>";
     content += "</body></html>";
     server.send(200, "text/html", content);

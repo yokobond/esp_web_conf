@@ -11,7 +11,7 @@ This program is based on [esp8266/Arduino](https://github.com/esp8266/Arduino) a
 
 First of all, you should upload this sketch using [esp8266/Arduino](https://github.com/esp8266/Arduino) (*updated Sep 09, 2015 or later*).
 
-Then follow this instructions.  
+Then follow this instructions to connect WiFi network.  
 
 1. Connect the module's access point SSID 'esp-????' directly.
  - module ID 'esp-????': '????' is determined by MAC address.
@@ -19,6 +19,8 @@ Then follow this instructions.
 3. Reboot the module to connect the WiFi network and get DHCP address.
 4. The module can be accessed by name 'esp-????.local' using mDNS(Bonjour).  
    Or, you can find the assigned IP address in 'http://192.168.4.1/' via direct connecting 'esp-????' as AP.
+
+When you want to update this sketch via Web, open 'http://esp-????/web_update' (or 'http://192.168.4.1/web_update' under connecting the module as AP) and upload a compiled sketch file named '*.bin' by a FORM in the page.
 
 
 ## Monitoring
