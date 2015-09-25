@@ -20,7 +20,7 @@ Then follow this instructions to connect WiFi network.
 4. The module can be accessed by name 'esp-????.local' using mDNS(Bonjour).  
    Or, you can find the assigned IP address in 'http://192.168.4.1/' via direct connecting 'esp-????' as AP.
 
-When you want to update this sketch via Web, open 'http://esp-????/web_update' (or 'http://192.168.4.1/web_update' under connecting the module as AP) and upload a compiled sketch file named '*.bin' by a FORM in the page.
+When you want to update this sketch via Web, open 'http://esp-????/update' (or 'http://192.168.4.1/update' under connecting the module as AP) and upload a compiled sketch file named '*.bin' by a FORM in the page.
 
 
 ## Monitoring
