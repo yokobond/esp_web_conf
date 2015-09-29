@@ -37,16 +37,16 @@ Startup
 
 scan done
 2 networks found
-1: y-home-g (-52)*
-2: y-home-gw (-52)*
+1: wifi-1 (-52)*
+2: wifi-2 (-52)*
 
 Module ID: esp-ecd4
 
-loading WifiConf
+loading WiFiConf
 SSID: ssid
 PASS: password
 
-Waiting for Wifi to connect
+Waiting for WiFi to connect
 66666666666666666666
 Connect timed out
 

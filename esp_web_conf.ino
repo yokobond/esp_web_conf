@@ -41,53 +41,53 @@ String network_html;
 
 #define WIFI_CONF_START 0
 
-struct WifiConfStruct {
+struct WiFiConfStruct {
   uint8_t format[4];
   char sta_ssid[32];
   char sta_pwd[64];
   char module_id[32];
-} WifiConf = {
+} WiFiConf = {
   WIFI_CONF_FORMAT,
   "ssid",
   "password",
   ""
 };
 
-void printWifiConf(void) {
+void printWiFiConf(void) {
   Serial.print("SSID: ");
-  Serial.println(WifiConf.sta_ssid);
+  Serial.println(WiFiConf.sta_ssid);
   Serial.print("Password: ");
-  Serial.println(WifiConf.sta_pwd);
+  Serial.println(WiFiConf.sta_pwd);
   Serial.print("Module ID: ");
-  Serial.println(WifiConf.module_id);
+  Serial.println(WiFiConf.module_id);
 }
 
-bool loadWifiConf() {
+bool loadWiFiConf() {
   Serial.println();
-  Serial.println("loading WifiConf");
+  Serial.println("loading WiFiConf");
   if (EEPROM.read(WIFI_CONF_START + 0) == wifi_conf_format[0] &&
       EEPROM.read(WIFI_CONF_START + 1) == wifi_conf_format[1] &&
       EEPROM.read(WIFI_CONF_START + 2) == wifi_conf_format[2] &&
       EEPROM.read(WIFI_CONF_START + 3) == wifi_conf_format[3])
   {
-    for (unsigned int t = 0; t < sizeof(WifiConf); t++) {
-      *((char*)&WifiConf + t) = EEPROM.read(WIFI_CONF_START + t);
+    for (unsigned int t = 0; t < sizeof(WiFiConf); t++) {
+      *((char*)&WiFiConf + t) = EEPROM.read(WIFI_CONF_START + t);
     }
-    printWifiConf();
+    printWiFiConf();
     return true;
   } else {
-    Serial.println("WifiConf was not saved on EEPROM.");
+    Serial.println("WiFiConf was not saved on EEPROM.");
     return false;
   }
 }
 
-void saveWifiConf(void) {
-  Serial.println("writing WifiConf");
-  for (unsigned int t = 0; t < sizeof(WifiConf); t++) {
-    EEPROM.write(WIFI_CONF_START + t, *((char*)&WifiConf + t));
+void saveWiFiConf(void) {
+  Serial.println("writing WiFiConf");
+  for (unsigned int t = 0; t < sizeof(WiFiConf); t++) {
+    EEPROM.write(WIFI_CONF_START + t, *((char*)&WiFiConf + t));
   }
   EEPROM.commit();
-  printWifiConf();
+  printWiFiConf();
 }
 
 void setDefaultModuleId(char* dst) {
@@ -99,9 +99,9 @@ void setDefaultModuleId(char* dst) {
 void resetModuleId(void) {
   uint8_t macAddr[WL_MAC_ADDR_LENGTH];
   WiFi.macAddress(macAddr);
-  setDefaultModuleId(WifiConf.module_id);
+  setDefaultModuleId(WiFiConf.module_id);
   Serial.print("Reset Module ID to default: ");
-  Serial.println(WifiConf.module_id);
+  Serial.println(WiFiConf.module_id);
 }
 
 ESP8266WebServer server(80);
@@ -115,30 +115,30 @@ void setup() {
   Serial.println("Startup");
 
   // read eeprom for ssid and pass
-  if (!loadWifiConf()) {
+  if (!loadWiFiConf()) {
     // EEPROM was not initialized.
     resetModuleId();
-    saveWifiConf();
+    saveWiFiConf();
   }
 
   // scan Access Points
-  scanWifi();
+  scanWiFi();
 
   // start WiFi
   WiFi.mode(WIFI_AP_STA);
-  WiFi.begin(WifiConf.sta_ssid, WifiConf.sta_pwd);
+  WiFi.begin(WiFiConf.sta_ssid, WiFiConf.sta_pwd);
   waitConnected();
   if (WiFi.status() == WL_CONNECTED) {
-    WiFi.softAP(WifiConf.module_id);
+    WiFi.softAP(WiFiConf.module_id);
   } else {
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(WifiConf.module_id);
+    WiFi.softAP(WiFiConf.module_id);
   }
   printIP();
 
   // setup Web Interface
   setupWeb();
-  setupWifiConf();
+  setupWiFiConf();
   setupWebUpdate();
 
   // start Web Server
@@ -147,7 +147,7 @@ void setup() {
   Serial.println("Server started");
 
   // start mDNS responder
-  if (!MDNS.begin(WifiConf.module_id)) {
+  if (!MDNS.begin(WiFiConf.module_id)) {
     Serial.println();
     Serial.println("Error setting up MDNS responder!");
     while (1) {
@@ -161,7 +161,7 @@ void setup() {
   MDNS.addService("http", "tcp", 80);
 }
 
-void scanWifi(void) {
+void scanWiFi(void) {
   int founds = WiFi.scanNetworks();
   Serial.println();
   Serial.println("scan done");
@@ -201,7 +201,7 @@ void scanWifi(void) {
 int waitConnected(void) {
   int wait = 0;
   Serial.println();
-  Serial.println("Waiting for Wifi to connect");
+  Serial.println("Waiting for WiFi to connect");
   while ( wait < 20 ) {
     if (WiFi.status() == WL_CONNECTED) {
       Serial.println("");
@@ -220,7 +220,7 @@ int waitConnected(void) {
 void printIP(void) {
   Serial.println();
   Serial.print("Name: ");
-  Serial.print(WifiConf.module_id);
+  Serial.print(WiFiConf.module_id);
   Serial.println(".local");
   Serial.print("LAN: ");
   Serial.println(WiFi.localIP());
@@ -228,21 +228,21 @@ void printIP(void) {
   Serial.println(WiFi.softAPIP());
 }
 
-void setupWifiConf(void) {
+void setupWiFiConf(void) {
   server.on("/wifi_conf", []() {
     IPAddress ip = WiFi.localIP();
     String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
     String content = "<!DOCTYPE HTML>\r\n<html><head><title>";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local - Configuration";
     content += "</title></head><body>";
     content += "<h1>Configuration of ESP8266</h1>";
     content += "<p>LAN: ";
-    content += WifiConf.sta_ssid;
+    content += WiFiConf.sta_ssid;
     content += "</br>IP: ";
     content += ipStr;
     content += " ( ";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local";
     content += " )</p>";
     content += "<p>";
@@ -258,16 +258,16 @@ void setupWifiConf(void) {
     String new_ssid = server.arg("ssid");
     String new_pwd = server.arg("pwd");
     String content = "<!DOCTYPE HTML>\r\n<html><head><title>";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local - set WiFi";
     content += "</title></head><body>";
     content += "<h1>Set WiFi of ESP8266</h1>";
     if (new_ssid.length() > 0) {
-      new_ssid.toCharArray(WifiConf.sta_ssid, sizeof(WifiConf.sta_ssid));
-      new_pwd.toCharArray(WifiConf.sta_pwd, sizeof(WifiConf.sta_pwd));
-      saveWifiConf();
+      new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
+      new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
+      saveWiFiConf();
       content += "<p>saved '";
-      content += WifiConf.sta_ssid;
+      content += WiFiConf.sta_ssid;
       content += "'... Reset to boot into new WiFi</p>";
       content += "<body></html>";
     } else {
@@ -281,21 +281,21 @@ void setupWifiConf(void) {
   server.on("/module_id", []() {
     IPAddress ip = WiFi.localIP();
     String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-    char defaultId[sizeof(WifiConf.module_id)];
+    char defaultId[sizeof(WiFiConf.module_id)];
     setDefaultModuleId(defaultId);
     String content = "<!DOCTYPE HTML>\r\n<html><head><title>";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local - Module ID";
     content += "</title></head><body>";
     content += "<h1>Module ID of ESP8266</h1>";
     content += "<p>Module ID: ";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += "</br>IP: ";
     content += ipStr;
     content += "</p>";
     content += "<p>";
     content += "<form method='get' action='set_module_id'><label for='module_id'>New Module ID: </label><input name='module_id' id='module_id' maxlength=32 value='";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += "'><input type='submit'></form>";
     content += " Empty will reset to default ID '";
     content += defaultId;
@@ -308,19 +308,19 @@ void setupWifiConf(void) {
     String new_id = server.arg("module_id");
     String content = "<!DOCTYPE HTML>\r\n<html><head>";
     content += "<title>";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local - set WiFi";
     content += "</title>";
     content += "</head><body>";
     if (new_id.length() > 0) {
-      new_id.toCharArray(WifiConf.module_id, sizeof(WifiConf.module_id));
+      new_id.toCharArray(WiFiConf.module_id, sizeof(WiFiConf.module_id));
     } else {
       resetModuleId();
     }
-    saveWifiConf();
+    saveWiFiConf();
     content += "<h1>Set WiFi of ESP8266</h1>";
     content += "<p>Set Module ID to '";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += "' ... Restart to applay it. </p>";
     content += "</body></html>";
     server.send(200, "text/html", content);
@@ -373,16 +373,16 @@ void setupWeb(void) {
     IPAddress ip = WiFi.localIP();
     String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
     String content = "<!DOCTYPE HTML>\r\n<html><head><title>";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local";
     content += "</title></head><body>";
     content += "<h1>Hello from ESP8266</h1>";
     content += "<p>LAN: ";
-    content += WifiConf.sta_ssid;
+    content += WiFiConf.sta_ssid;
     content += "</br>IP: ";
     content += ipStr;
     content += " ( ";
-    content += WifiConf.module_id;
+    content += WiFiConf.module_id;
     content += ".local";
     content += " )</p>";
     content += "<p>";
