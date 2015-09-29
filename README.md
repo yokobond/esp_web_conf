@@ -11,7 +11,7 @@ This program is based on [esp8266/Arduino](https://github.com/esp8266/Arduino) a
 
 First of all, you should upload this sketch using [esp8266/Arduino](https://github.com/esp8266/Arduino) (*updated Sep 09, 2015 or later*).
 
-### WiFi Setup
+### Setup WiFi
 Then follow this instructions to connect WiFi network.  
 
 1. Connect the module's access point SSID 'esp-????' directly.
@@ -22,7 +22,7 @@ Then follow this instructions to connect WiFi network.
    Or, you can find the assigned IP address in 'http://192.168.4.1/' via direct connecting 'esp-????' as AP.
 
 ### Change Module ID
-   When you want to change the Module name, open '/module_id' and change the module ID. If you submit blank ID, the default ID 'esp-????' will be used. 
+When you want to change the Module name, open '/module_id' and change the module ID. If you submit blank ID, the default ID 'esp-????' will be used.
 
 ### Update This Sketch
 When you want to update this sketch via Web, open '/update' and upload a compiled sketch file named '*.bin' by a FORM in the page.

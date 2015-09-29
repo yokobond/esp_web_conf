@@ -3,6 +3,9 @@
  *
  * This is a web service to configure ESP8266 connect WiFi network with DHCP.
  *
+ * ### Setup WiFi
+ * Then follow this instructions to connect WiFi network.  
+ * 
  * 1. Connect the module's access point SSID 'esp-????' directly.
  *  - module ID 'esp-????': '????' is determined by MAC address.
  * 2. Open 'http://192.168.4.1/wifi_conf' and set the SSID and Password of your WiFi network.
@@ -10,6 +13,12 @@
  * 4. The module can be accessed by name 'esp-????.local' using mDNS(Bonjour).
  *    Or, you can find the assigned IP address in 'http://192.168.4.1/' via direct connecting 'esp-????' as AP.
  *
+ * ### Change Module ID
+ * When you want to change the Module name, open '/module_id' and change the module ID. 
+ * If you submit blank ID, the default ID 'esp-????' will be used. 
+ *
+ * ### Update This Sketch
+ * When you want to update this sketch via Web, open '/update' and upload a compiled sketch file named '*.bin' by a FORM in the page.
  *
  * The MIT License (MIT)
  *
