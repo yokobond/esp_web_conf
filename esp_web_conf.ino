@@ -246,9 +246,9 @@ void setupWiFiConf(void) {
     content += ".local";
     content += " )</p>";
     content += "<p>";
-    content += "</p><form method='get' action='set_wifi_conf'><label for='ssid'>SSID: </label><input name='ssid'id='ssid' maxlength=32 value='";
-    content += ""; // default SSID is empty to avoid careless setting
-    content += "'> <label for='pwd'>PASS: </label><input name='pwd' id='pwd' maxlength=64><input type='submit'></form>";
+    content += "</p><form method='get' action='set_wifi_conf'><label for='ssid'>SSID: </label><input name='ssid'id='ssid' maxlength=32 value=''>";
+    content += "<label for='pwd'>PASS: </label> <input type='password' name='pwd' id='pwd' />";
+    content += "<input type='submit' onclick='return confirm(\"Are you sure you want to change the WiFi settings?\");'></form>";
     content += network_html;
     content += "</body></html>";
     server.send(200, "text/html", content);
@@ -296,7 +296,7 @@ void setupWiFiConf(void) {
     content += "<p>";
     content += "<form method='get' action='set_module_id'><label for='module_id'>New Module ID: </label><input name='module_id' id='module_id' maxlength=32 value='";
     content += WiFiConf.module_id;
-    content += "'><input type='submit'></form>";
+    content += "'><input type='submit' onclick='return confirm(\"Are you sure you want to change the Module ID?\");'></form>";
     content += " Empty will reset to default ID '";
     content += defaultId;
     content += "'</p>";
@@ -327,7 +327,7 @@ void setupWiFiConf(void) {
   });
 }
 
-const char* sketchUploadForm = "<form method='POST' action='/upload_sketch' enctype='multipart/form-data'><input type='file' name='sketch'><input type='submit' value='Upload'></form>";
+const char* sketchUploadForm = "<form method='POST' action='/upload_sketch' enctype='multipart/form-data'><input type='file' name='sketch'><input type='submit' value='Upload' onclick='return confirm(\"Are you sure you want to update the Sketch?\");'></form>";
 
 void setupWebUpdate(void) {
   server.on("/update", HTTP_GET, []() {
