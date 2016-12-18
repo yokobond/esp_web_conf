@@ -265,10 +265,18 @@ void setupWiFiConf(void) {
     if (new_ssid.length() > 0) {
       new_ssid.toCharArray(WiFiConf.sta_ssid, sizeof(WiFiConf.sta_ssid));
       new_pwd.toCharArray(WiFiConf.sta_pwd, sizeof(WiFiConf.sta_pwd));
+      String deviceURL = "http://";
+      deviceURL += WiFiConf.module_id;
+      deviceURL += ".local/";
       saveWiFiConf();
       content += "<p>saved '";
       content += WiFiConf.sta_ssid;
       content += "'... Reset to boot into new WiFi</p>";
+      content += "<p>You can access this device at <a href='";
+      content += deviceURL;
+      content += "'>";
+      content += deviceURL;
+      content += "</a>.<p>";
       content += "<body></html>";
     } else {
       content += "<p>Empty SSID is not acceptable. </p>";
